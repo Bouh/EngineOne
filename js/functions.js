@@ -48,6 +48,56 @@ function initCannon(){
 	world.add(groundBody);
 }
 
+/**
+ * @param arg_name : String (Cannon or Three.js)
+ * @brief Delete object with collision and display
+ */
+function removeObject(arg_name){
+
+	var name = arg_name;
+	
+	var cannon_object = world.getObjectByName(name);
+	var three_object = scene.getObjectByName(name);
+	
+	if(cannon_object && three_object){
+		world.remove(cannon_object)
+		scene.remove(three_object);
+	}
+
+}
+
+/**
+ * @param arg_dimension : Vec3 
+ * @param arg_position : Vec3
+ * @param aarg_name : String
+ * @brief Create box with name, dimension, position
+ */
+function boxCollide(arg_dimension,arg_position, arg_name){
+
+	var position = arg_position;
+	var dimension = arg_dimension;
+	
+	var plateformeShape = new CANNON.Box(new CANNON.Vec3(dimension.x, dimension.y, dimension.z));
+	var plateformeBody = new CANNON.RigidBody(0,plateformeShape,physicsMaterial);
+	plateformeBody.name = arg_name;
+	//plateformeBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+	
+	plateformeBody.position.set(position.x,position.y,position.z);
+	world.add(plateformeBody);
+	
+	var currentMaterial = new THREE.MeshLambertMaterial({ color: "red", wireframe:false });
+	
+	var box_geometry = new THREE.BoxGeometry(  dimension.x*2, dimension.y*2, dimension.z*2 );
+	
+	mesh = new THREE.Mesh( box_geometry, currentMaterial);
+	mesh.position.set( position.x, position.y, position.z);
+	mesh.name = arg_name;
+	scene.add(mesh);
+}
+
+/**
+ * @brief If we can block cursor for movement type FPS
+ */
 function activePointerLock(){
 
 	if(app.havePointerLock){
@@ -90,8 +140,7 @@ function activePointerLock(){
 }
 
 
-
-		
+//todo
 function load_all_files(data){
 
 	data.object.forEach(function(elem){
@@ -126,6 +175,9 @@ function load_all_files(data){
 	});
 }
 
+/**
+ * @brief Resize in realtime canvas for ratio image
+ */
 function onWindowResize() {
 
 	camera.aspect = window.innerWidth / window.innerHeight;
@@ -133,7 +185,9 @@ function onWindowResize() {
 	renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
-
+/**
+ * @brief View in console debug
+ */
 function manager(){
 	new THREE.LoadingManager();
 	manager.onProgress = function ( item, loaded, total ) {
@@ -141,11 +195,37 @@ function manager(){
 	};
 }
 
-
+/**
+ * @brief Timer in index.html
+ */
+function changeTime() {
+    var timeSplited = app.time.split(':');
+    var hour = timeSplited[0];
+    var minute = timeSplited[1];
+    var second = timeSplited[2];
+    second++;
+    if(second==60) {
+        second = '0';
+        minute++;
+        if(minute == 60){
+            minute = '0';
+            hour++;
+        }
+    }
+	hour = '0'+hour;
+	hour = hour.toString().substr(-2, 2);
+	minute = '0'+minute;
+	minute = minute.toString().substr(-2, 2);
+	second = '0'+second;
+	second = second.toString().substr(-2, 2);
+    app.time = hour+':'+minute+':'+second;
+    document.getElementById('time').innerHTML = app.time;
+}
 
 
 ///////////////////////////////////
-
+//OTHER unused
+/*
 
 function collision(box1, box2){
 	if((box2.position.x >= box1.position.x + box1.geometry.width)	// trop à droite
@@ -221,3 +301,5 @@ function rayon(){
 	
 }
 
+
+*/

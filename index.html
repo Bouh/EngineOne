@@ -25,8 +25,10 @@
 		
     </head>
     <body>
-	<p style="position: absolute;margin: 0px 100px;background-color:white;">WIP</p>
-		
+		<div id="info">
+			<p style="margin: 0px auto;">WIP</p>
+			<span id="time">00:00:00</span>
+		</div>		
         <script async type="text/javascript">
 		
 		 var controls,time = Date.now();
@@ -57,7 +59,10 @@
 		check = app.images("img/checkerboard.jpg");
 		
 		window.onload = function(e){ 
-
+		
+			//chronometre
+			var instance = self.setInterval(changeTime ,1000);
+			
 			activePointerLock();
 			initCannon();
 			app.init_scene();//Scene création

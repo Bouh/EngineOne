@@ -25,35 +25,10 @@ app.stage = function(){
 	mesh.name = "sphereControls";
 	scene.add(mesh);
 	
-	//plateforme1
 	
-	var plateformeShape = new CANNON.Box(new CANNON.Vec3(100, 10, 100));
-	var plateformeBody = new CANNON.RigidBody(0,plateformeShape,physicsMaterial);
-	//plateformeBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
-	plateformeBody.position.set(5,35,150);
-	world.add(plateformeBody);
-	console.log("---------" + plateformeBody);
+	boxCollide(new CANNON.Vec3(100, 10, 100), new CANNON.Vec3(500, 10, 100), "plateforme_remove");
 	
-	var currentMaterial = new THREE.MeshLambertMaterial({ color: "red", wireframe:false });
-	var box_geometry = new THREE.BoxGeometry(  100*2, 10*2, 100*2 );
-	mesh = new THREE.Mesh( box_geometry, currentMaterial );
-	mesh.position.set(5,35,150);
-	mesh.name = "monsol";
-	scene.add(mesh);
+	boxCollide(new CANNON.Vec3(100, 10, 100), new CANNON.Vec3(5, 35, 150), "plateforme_1");
+	boxCollide(new CANNON.Vec3(100, 10, 100), new CANNON.Vec3(5, 60, 450), "plateforme_2");
 	
-	
-	//plateforme2
-	
-	var plateformeShape = new CANNON.Box(new CANNON.Vec3(100, 10, 100));
-	var plateformeBody = new CANNON.RigidBody(0,plateformeShape,physicsMaterial);
-	//plateformeBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
-	plateformeBody.position.set(5,60,450);
-	world.add(plateformeBody);
-	
-	var currentMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff, wireframe:false });
-	var box_geometry =  new THREE.BoxGeometry(  100*2, 10*2, 100*2 );
-	mesh = new THREE.Mesh( box_geometry, currentMaterial );
-	mesh.position.set(5,60,450);
-	mesh.name = "monsol";
-	scene.add(mesh);
 };
