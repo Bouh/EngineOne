@@ -1,13 +1,26 @@
 EngineOne
 =========
 
-Gestion de collison dans un environement fait avec Maya et Blender.
+Management of collisions in an environment made ​​with Maya and Blender.
 
-Cannon.js
-Three.js
 
-Disponible :
+-   [Three.js](https://github.com/mrdoob/three.js "Display")
+-   [Cannon.js](https://github.com/schteppe/cannon.js "Physics")
 
-  Saut
-  Courrir
-  Collsion box
+
+Available :
+------------
+    
+    -   Jump
+    -   Run
+    -   Collision Box
+    
+What I will probably do next
+----------------------------
+    
+    -   Clean code
+    -   Data Json for loading
+    -   Collison with Sphere, Plane, Custom, Convex
+    -   Data base shader or Json
+    -   Rays for detect mouse hover
+    -   Drink a lot of coffee
