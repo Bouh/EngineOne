@@ -72,7 +72,6 @@ var app = {
 		}
 	},
 	
-	
 	init_scene : function(){
 	
 		this.log_console === true ? console.log("app.init_scene") : false ;
