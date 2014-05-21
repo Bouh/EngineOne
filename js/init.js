@@ -21,8 +21,6 @@ var app = {
 	keyboard : new THREEx.KeyboardState(),
 	havePointerLock : 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document,
 	
-	
-
 	duff : function() {
 	},
 	
