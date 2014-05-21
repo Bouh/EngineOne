@@ -10,6 +10,7 @@ var add_images = new Array();
 
 var app = {
 	
+	time : "0:0:0",
 	clock : new THREE.Clock(),
 //	delta : app.clock.getDelta(),
 	objectsCollider : [],
@@ -21,6 +22,8 @@ var app = {
 	keyboard : new THREEx.KeyboardState(),
 	havePointerLock : 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document,
 	
+	
+
 	duff : function() {
 	},
 	
@@ -71,6 +74,7 @@ var app = {
 			oXmlHttp.send(null);
 		}
 	},
+	
 	
 	init_scene : function(){
 	
