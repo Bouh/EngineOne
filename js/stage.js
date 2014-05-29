@@ -20,7 +20,7 @@ app.stage = function(){
 	
 	
 	var currentMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff, wireframe:true });
-	var sphere_geometry = new THREE.SphereGeometry( 50, 8, 8);
+	var sphere_geometry = new THREE.BoxGeometry( 10, 10, 10);
 	mesh = new THREE.Mesh( sphere_geometry, currentMaterial );
 	mesh.name = "sphereControls";
 	scene.add(mesh);
@@ -30,5 +30,7 @@ app.stage = function(){
 	
 	boxCollide(new CANNON.Vec3(100, 10, 100), new CANNON.Vec3(5, 35, 150), "plateforme_1");
 	boxCollide(new CANNON.Vec3(100, 10, 100), new CANNON.Vec3(5, 60, 450), "plateforme_2");
+	
+	boxCollide(new CANNON.Vec3(10, 10, 10), new CANNON.Vec3(0, 50, 10), "playerBox");
 	
 };
