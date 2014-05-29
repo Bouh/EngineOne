@@ -31,10 +31,10 @@ function initCannon(){
 	// We must add the contact materials to the world
 	world.addContactMaterial(physicsContactMaterial);
 	
-	// Create a sphere
+	// Create a box collider for player
 	var mass = 10 * 100, radius = 50;
-	sphereShape = new CANNON.Sphere(radius);
-	sphereBody = new CANNON.RigidBody(mass,sphereShape,physicsMaterial);
+	var playerShape = new CANNON.Box(new CANNON.Vec3(10, 10, 10),true);
+	sphereBody = new CANNON.RigidBody(mass,playerShape,physicsMaterial);
 	sphereBody.position.set(0,50,10);
 	sphereBody.linearDamping = 0.1;
 	world.add(sphereBody);
