@@ -1,3 +1,60 @@
+Chargement des data
+	Script
+	
+	
+	
+Chaque partie du jeu contient la liste des element a charger (pas open world)
+
+Chargement des element les plus proche dans la scene (du coup voir les LOD pour les element a l'horizon)
+
+
+
+
+
+
+
+
+
+
+///////
+
+- Chargement
+    - Script
+    - Textures
+	
+- Page chargé puis
+    - Lancement des stats
+    - Bloque curseur
+    - Initialisation de la physique
+    - Création de la scène three.js
+	
+- Chargement
+    - Mesh
+	
+
+- Placement des mesh avec les textures
+
+- Boucle d'animation / Rendus
+
+- Event
+	Resize window
+
+---------------------------------------
+---------------------------------------
+
+Chargement
+	Script de chargement
+		Assets Important
+			Decors
+		Autres script.
+			
+
+Initialisation.
+	Variables.
+	Mise en place des objets qui sont dans un certain rayon.
+
+---------------------------------------
+
 Important link :
 
 //Aperçus visuel de cannon.js en three.js

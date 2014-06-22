@@ -3,9 +3,11 @@ app.log_console === true ? console.log("Open -- stage.js") : false ;
 app.stage = function(){
 	
 	var light = new THREE.AmbientLight( 0x404040 ); // soft white light
+	light.name="AmbientLight";
 	scene.add( light );
 
 	var light = new THREE.PointLight( "white",1,1000);
+	light.name="PointLight";
 	light.position.set(10,0,0);
 	scene.add( light );
 	
@@ -20,9 +22,9 @@ app.stage = function(){
 	
 	
 	var currentMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff, wireframe:true });
-	var sphere_geometry = new THREE.BoxGeometry( 10, 10, 10);
-	mesh = new THREE.Mesh( sphere_geometry, currentMaterial );
-	mesh.name = "sphereControls";
+	var box_geometry = new THREE.SphereGeometry( 25, 8, 8);
+	mesh = new THREE.Mesh( box_geometry, currentMaterial );
+	mesh.name = "BoxControls";
 	scene.add(mesh);
 	
 	
@@ -31,6 +33,6 @@ app.stage = function(){
 	boxCollide(new CANNON.Vec3(100, 10, 100), new CANNON.Vec3(5, 35, 150), "plateforme_1");
 	boxCollide(new CANNON.Vec3(100, 10, 100), new CANNON.Vec3(5, 60, 450), "plateforme_2");
 	
-	boxCollide(new CANNON.Vec3(10, 10, 10), new CANNON.Vec3(0, 50, 10), "playerBox");
+	
 	
 };
