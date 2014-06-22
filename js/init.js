@@ -100,11 +100,11 @@ var app = {
 		}
 		controls.update(Date.now() - time);
 
-		scene.getObjectByName("sphereControls").position.set(sphereBody.position.x, sphereBody.position.y, sphereBody.position.z);
+		scene.getObjectByName("BoxControls").position.set(sphereBody.position.x, sphereBody.position.y, sphereBody.position.z);
 
 		sd =  new THREE.Euler();
 		sd.setFromQuaternion(sphereBody.quaternion,"XYZ");
-		scene.getObjectByName("sphereControls").rotation.set(sd.x, sd.y, sd.z);
+		scene.getObjectByName("BoxControls").rotation.set(sd.x, sd.y, sd.z);
 		
 		renderer.render(scene, camera);
 		document.getElementsByTagName("p")[0].innerHTML = "Delta : 0,01699... /" + app.delta + "<br>Time : 17 / " + (Date.now() - time );

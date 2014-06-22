@@ -31,18 +31,18 @@ function initCannon(){
 	// We must add the contact materials to the world
 	world.addContactMaterial(physicsContactMaterial);
 	
+	
 	// Create a box collider for player
-	var mass = 10 * 100, radius = 50;
-	var playerShape = new CANNON.Box(new CANNON.Vec3(10, 10, 10),true);
+	var mass = 10 * 100, radius = 25;
+	var playerShape = new CANNON.Sphere(radius);
 	sphereBody = new CANNON.RigidBody(mass,playerShape,physicsMaterial);
 	sphereBody.position.set(0,50,10);
 	sphereBody.linearDamping = 0.1;
 	world.add(sphereBody);
 
 	
-	// Create a plane
+	// Create a plane sol
 	var groundShape = new CANNON.Plane();
-//	var groundShape = new CANNON.Box(new CANNON.Vec3(10, 10, 10),true);
 	var groundBody = new CANNON.RigidBody(0,groundShape,physicsMaterial);
 	groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
 	world.add(groundBody);
@@ -65,6 +65,50 @@ function removeObject(arg_name){
 	}
 
 }
+
+
+
+
+
+
+
+
+function HardCollide(vertices, faces, arg_dimension, arg_position, arg_name){
+  var compound = new CANNON.Compound();
+         
+	var verts = vertices;
+	var faces = faces;
+	var pos = arg_position;
+
+	console.log(vertices);
+	
+	var ShapeCollide = new CANNON.ConvexPolyhedron(verts,faces);
+	
+	var offset = new CANNON.Vec3(1,1,1);
+	
+	compound.addChild(ShapeCollide,offset);
+
+	
+	var ShapeBody = new CANNON.RigidBody(0,compound);
+	
+	ShapeBody.name = arg_name;
+	//plateformeBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+	
+	ShapeBody.position.set(pos[0],pos[1],pos[2]);
+	
+	world.add(ShapeBody);
+	
+	//return ShapeBody;
+	
+}
+
+
+
+
+
+
+
+
 
 /**
  * @param arg_dimension : Vec3 
@@ -147,16 +191,18 @@ function load_all_files(data){
 	
 		var name = "data/models/" + elem.name + ".js";//file
 		
-		console.log(name);
-		
 		var loader = new THREE.JSONLoader( manager );
-		loader.load(name,function (geometry,materials){						
+		var d = loader.load(name,function (geometry,materials,json){
 			
-			
+			var scope = json;
 			var name = elem.name;//name
 			var pos = elem.position;//position
 			var rot = elem.rotation;//rotation
 			var sca = elem.scale;//rotation
+			
+			var collisionType = elem.collisionType;//collision
+			var vertices = vertices;//vertices
+			var faces = elem.faces;//faces
 			
 			var object = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials)); 
 			
@@ -170,8 +216,44 @@ function load_all_files(data){
 			objTOrescale = scene.getObjectByName(object.name);
 			
 			objTOrescale.scale.set(sca[0],sca[1],sca[2]);
+
+			/**
+			
+			ne fonctionne pas car :
+			var vertices = vertices;//vertices
+			var faces = elem.faces;//faces
+			ne recupere pas les info dans le bon format;
+			
+			il y a array dans array, au lieux d'une suite comme dans colonnes.js
+			
+			**/
+			//physics
+			switch(collisionType) {
+				case "Hard":
+						HardCollide(vertices, faces, sca, pos, name);
+						//objectPhysic.position.set(pos[0],pos[1],pos[2]);
+						//objectPhysic.quaternion.set(rot[0],rot[1],rot[2]);
+						//world.add(objectPhysic);
+					break;
+					
+				case "Box":
+					break;
+					
+				case "Sphere":
+					break;
+					
+				case "none":
+					break;
+					
+				default:
+					break;
+			}
+
+			
+			
 			
 		},"data/textures/");
+		
 	});
 }
 
