@@ -66,30 +66,63 @@ function removeObject(arg_name){
 
 }
 
+/**
+ * @param threeVec3 : Vec3 (Three.js)
+ * @brief Convert THREE.Vector3() to CANNON.Vec3()
+ */
+function ThreeVec3TOcannonVec3(threeVec3){
+	return new CANNON.Vec3(threeVec3.x, threeVec3.y, threeVec3.z);
+}
 
 
 
+function normal( va, vb, vc, target ) {
+var ab = new CANNON.Vec3();
+var cb = new CANNON.Vec3();
+	vb.vsub(va,ab);
+	vc.vsub(vb,cb);
+	cb.cross(ab,target);
+	if ( !target.isZero() ) {
+		target.normalize();
+	}
+}
 
 
 
-
-function HardCollide(vertices, faces, arg_dimension, arg_position, arg_name){
-  var compound = new CANNON.Compound();
+//function HardCollide(vertices, faces, arg_dimension, arg_position, arg_name){
+function HardCollide(geometry, arg_dimension, arg_position, arg_name){
+ // var compound = new CANNON.Compound();
          
-	var verts = vertices;
-	var faces = faces;
+	var geometry = geometry;
+	//var verts = vertices;
+	//var faces = faces;
 	var pos = arg_position;
 
-	console.log(vertices);
 	
-	var ShapeCollide = new CANNON.ConvexPolyhedron(verts,faces);
 	
-	var offset = new CANNON.Vec3(1,1,1);
+	var vertices = [];
+	var faces = [];
+	var normals = [];
 	
-	compound.addChild(ShapeCollide,offset);
+	for(var i = 0; i < geometry.vertices.length; i++){
+		vertices[i] = ThreeVec3TOcannonVec3(geometry.vertices[i]);
+		//vertices[i] = ThreeVec3TOcannonVec3(geometry.vertices[i]).mult(10);
+	}
+	
+	for(var i = 0; i < geometry.faces.length; i++){
+		faces[i] = ThreeVec3TOcannonVec3(geometry.faces[i]);
+		//faces[i] = ThreeVec3TOcannonVec3(geometry.faces[i]).mult(10);
+	}
 
 	
-	var ShapeBody = new CANNON.RigidBody(0,compound);
+	var ShapeCollide = new CANNON.ConvexPolyhedron(vertices, faces, normals);
+	
+	var offset = new CANNON.Vec3(0,0,0);
+	
+	//compound.addChild(ShapeCollide,offset);
+
+	
+	var ShapeBody = new CANNON.RigidBody(0,ShapeCollide);
 	
 	ShapeBody.name = arg_name;
 	//plateformeBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
@@ -98,7 +131,6 @@ function HardCollide(vertices, faces, arg_dimension, arg_position, arg_name){
 	
 	world.add(ShapeBody);
 	
-	//return ShapeBody;
 	
 }
 
@@ -192,9 +224,12 @@ function load_all_files(data){
 		var name = "data/models/" + elem.name + ".js";//file
 		
 		var loader = new THREE.JSONLoader( manager );
-		var d = loader.load(name,function (geometry,materials,json){
+	
+		
+		var d = loader.load(name,function (geometry,materials){
 			
-			var scope = json;
+			var geometry = geometry;
+		
 			var name = elem.name;//name
 			var pos = elem.position;//position
 			var rot = elem.rotation;//rotation
@@ -205,6 +240,7 @@ function load_all_files(data){
 			var faces = elem.faces;//faces
 			
 			var object = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials)); 
+			
 			
 			object.name = name;
 			
@@ -217,20 +253,18 @@ function load_all_files(data){
 			
 			objTOrescale.scale.set(sca[0],sca[1],sca[2]);
 
-			/**
+			//ne fonctionne pas car :
+			//var vertices = vertices;//vertices
+			//var faces = elem.faces;//faces
+			//ne recupere pas les info dans le bon format;
 			
-			ne fonctionne pas car :
-			var vertices = vertices;//vertices
-			var faces = elem.faces;//faces
-			ne recupere pas les info dans le bon format;
-			
-			il y a array dans array, au lieux d'une suite comme dans colonnes.js
-			
-			**/
+			//il y a array dans array, au lieux d'une suite comme dans colonnes.js
+
 			//physics
 			switch(collisionType) {
 				case "Hard":
-						HardCollide(vertices, faces, sca, pos, name);
+						//HardCollide(vertices, faces, sca, pos, name);
+						HardCollide(geometry, sca, pos, name);
 						//objectPhysic.position.set(pos[0],pos[1],pos[2]);
 						//objectPhysic.quaternion.set(rot[0],rot[1],rot[2]);
 						//world.add(objectPhysic);
