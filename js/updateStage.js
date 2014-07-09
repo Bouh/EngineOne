@@ -5,9 +5,11 @@ app.updateStage = function(){
 	app.controller();//Gestion interface/code
 		
 		
-	setTimeout(function(){
-		removeObject("plateforme_remove");
-	},9000);
+	//setTimeout(function(){
+		//removeObject("plateforme_remove");
+	//},9000);
+	
+	
 	
 
 	

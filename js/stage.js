@@ -11,7 +11,7 @@ app.stage = function(){
 	light.position.set(10,0,0);
 	scene.add( light );
 	
-	
+
 	app.element = document.getElementById("mycanvas");
 
 	app.element.requestPointerLock = app.element.requestPointerLock || app.element.mozRequestPointerLock || app.element.webkitRequestPointerLock;
@@ -25,14 +25,16 @@ app.stage = function(){
 	var box_geometry = new THREE.SphereGeometry( 25, 8, 8);
 	mesh = new THREE.Mesh( box_geometry, currentMaterial );
 	mesh.name = "BoxControls";
-	scene.add(mesh);
+//	scene.add(mesh);
 	
 	
-	boxCollide(new CANNON.Vec3(100, 10, 100), new CANNON.Vec3(500, 10, 100), "plateforme_remove");
+	//boxCollide(new CANNON.Vec3(100, 10, 100), new CANNON.Vec3(500, 10, 100), "plateforme_remove");
 	
-	boxCollide(new CANNON.Vec3(100, 10, 100), new CANNON.Vec3(5, 35, 150), "plateforme_1");
-	boxCollide(new CANNON.Vec3(100, 10, 100), new CANNON.Vec3(5, 60, 450), "plateforme_2");
+	//boxCollide(new CANNON.Vec3(100, 10, 100), new CANNON.Vec3(5, 35, 150), "plateforme_1");
+	//boxCollide(new CANNON.Vec3(100, 10, 100), new CANNON.Vec3(5, 60, 450), "plateforme_2");
+	sol();
 	
+	//scene.add(sphereBody);
 	
 	
 };
