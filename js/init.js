@@ -79,7 +79,9 @@ var app = {
 	init_scene : function(){
 	
 		this.log_console === true ? console.log("app.init_scene") : false ;
-		scene = new THREE.Scene();
+		scene = new Physijs.Scene();
+		joueur();
+		scene.setGravity(new THREE.Vector3( 0, -9.8*100, 0 ));
 		this.camera();
 		this.render();
 	},
@@ -96,16 +98,19 @@ var app = {
 		app.updateStage();
 		
 		if(controls.enabled){
-			world.step(app.delta);
+			scene.setFixedTimeStep(app.delta);
 		}
 		controls.update(Date.now() - time);
 
-		scene.getObjectByName("BoxControls").position.set(sphereBody.position.x, sphereBody.position.y, sphereBody.position.z);
+		//scene.getObjectByName("BoxControls").position.set(sphereBody.position.x, sphereBody.position.y, sphereBody.position.z);
 
 		sd =  new THREE.Euler();
-		sd.setFromQuaternion(sphereBody.quaternion,"XYZ");
-		scene.getObjectByName("BoxControls").rotation.set(sd.x, sd.y, sd.z);
+	//	sd.setFromQuaternion(sphereBody.quaternion,"XYZ");
+		//scene.getObjectByName("BoxControls").rotation.set(sd.x, sd.y, sd.z);
 		
+		mesh.__dirtyPosition = true;
+		
+		scene.simulate( undefined, 1 );
 		renderer.render(scene, camera);
 		document.getElementsByTagName("p")[0].innerHTML = "Delta : 0,01699... /" + app.delta + "<br>Time : 17 / " + (Date.now() - time );
 		time = Date.now();
@@ -119,6 +124,7 @@ var app = {
 		var SCALE = 1;
 		
 		//renderer = new THREE.WebGLDeferredRenderer( { width: WIDTH, height: HEIGHT, scale: SCALE, antialias: true, brightness: 2.5 } );
+		
 		
 		renderer = new THREE.WebGLRenderer({antialias:true, canvas : mycanvas});
 		renderer.setFaceCulling( THREE.CullFaceBack, THREE.FrontFaceDirectionCW );
@@ -157,9 +163,19 @@ var app = {
 		red : function(){
 			return new THREE.MeshLambertMaterial({
 				//map  : app.images(img),
+				color : "blue",
+				wireframe : false,
+				ambient : "red"
+				//side : THREE.DoubleSide					
+			});
+		},
+		
+		green : function(){
+			return new THREE.MeshLambertMaterial({
+				//map  : app.images(img),
 				color : "red",
 				wireframe : false,
-				ambient : "blue"
+				ambient : "green"
 				//side : THREE.DoubleSide					
 			});
 		},

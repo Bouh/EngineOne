@@ -1,51 +1,72 @@
-function initCannon(){
-	// Setup our world
-	world = new CANNON.World();
-	world.quatNormalizeSkip = 0;
-	world.quatNormalizeFast = false;
+/*
 
-	var solver = new CANNON.GSSolver();
+découpage du fichier colonnes en 1 colonne sur le quel une collision boite est mise 
+puis le plafond qui lui aussi est une boite de collision.
 
-	world.defaultContactMaterial.contactEquationStiffness = 1e9;
-	world.defaultContactMaterial.contactEquationRegularizationTime = 4;
+deplacement de la cam avec physijs
 
-	solver.iterations = 7;
-	solver.tolerance = 0.1;
-	var split = true;
-	if(split){
-		world.solver = new CANNON.SplitSolver(solver);
-	}else{
-		world.solver = solver;
-	}
+*/
 
-	world.gravity.set(0,-970,0);
-	world.broadphase = new CANNON.NaiveBroadphase();
 
-	// Create a slippery material (friction coefficient = 0.0)
-	physicsMaterial = new CANNON.Material("slipperyMaterial");
-	var physicsContactMaterial = new CANNON.ContactMaterial(physicsMaterial,
-															physicsMaterial,
-															0.9, // friction coefficient
-															0.1  // restitution
-															);
-	// We must add the contact materials to the world
-	world.addContactMaterial(physicsContactMaterial);
+
+
+
+
+
+
+
+function initPhysijs(){
+
+	Physijs.scripts.worker = './lib/physijs_worker.js';
+	Physijs.scripts.ammo = 'ammo.js';
+	
+	//sphere_geometry = new THREE.SphereGeometry(25, 8, 8 ),
+	//sphereBody = new Physijs.SphereMesh(sphere_geometry,app.mat.red(),0,{ restitution: Math.random() * 1.5 });
+	//sphereBody.position.set(0,-100,100);
 	
 	
-	// Create a box collider for player
-	var mass = 10 * 100, radius = 25;
-	var playerShape = new CANNON.Sphere(radius);
-	sphereBody = new CANNON.RigidBody(mass,playerShape,physicsMaterial);
-	sphereBody.position.set(0,50,10);
-	sphereBody.linearDamping = 0.1;
-	world.add(sphereBody);
-
 	
-	// Create a plane sol
-	var groundShape = new CANNON.Plane();
-	var groundBody = new CANNON.RigidBody(0,groundShape,physicsMaterial);
-	groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
-	world.add(groundBody);
+}
+
+function joueur(){
+
+	ground_material = Physijs.createMaterial(
+				app.mat.red(),
+				0, // high friction
+				0 // low restitution
+			);
+			
+	boite = new Physijs.SphereMesh(
+				new THREE.SphereGeometry(10, 18, 18 ),
+				ground_material,
+				undefined // mass undefined
+			);
+			scene.add( boite);
+			boite.name = "boite";
+			boite.position.set(0,25,-50);
+			boite.__dirtyPosition = true;
+			
+}
+
+
+function sol(){
+
+	ground_material = Physijs.createMaterial(
+				app.mat.green(),
+				0, // high friction
+				0 // low restitution
+			);
+			
+	ground = new Physijs.BoxMesh(
+				new THREE.BoxGeometry(1000, 1, 1000),
+				ground_material,
+				0 // mass
+			);
+			ground.receiveShadow = true;
+			scene.add( ground);
+			ground.position.set(0,0,0);
+			ground.__dirtyPosition = true;
+			
 }
 
 /**
@@ -75,30 +96,15 @@ function ThreeVec3TOcannonVec3(threeVec3){
 }
 
 
-
-function normal( va, vb, vc, target ) {
-var ab = new CANNON.Vec3();
-var cb = new CANNON.Vec3();
-	vb.vsub(va,ab);
-	vc.vsub(vb,cb);
-	cb.cross(ab,target);
-	if ( !target.isZero() ) {
-		target.normalize();
-	}
-}
-
-
-
 //function HardCollide(vertices, faces, arg_dimension, arg_position, arg_name){
 function HardCollide(geometry, arg_dimension, arg_position, arg_name){
- // var compound = new CANNON.Compound();
+
          
 	var geometry = geometry;
 	//var verts = vertices;
 	//var faces = faces;
 	var pos = arg_position;
 
-	
 	
 	var vertices = [];
 	var faces = [];
@@ -134,14 +140,6 @@ function HardCollide(geometry, arg_dimension, arg_position, arg_name){
 	
 }
 
-
-
-
-
-
-
-
-
 /**
  * @param arg_dimension : Vec3 
  * @param arg_position : Vec3
@@ -168,6 +166,7 @@ function boxCollide(arg_dimension,arg_position, arg_name){
 	mesh = new THREE.Mesh( box_geometry, currentMaterial);
 	mesh.position.set( position.x, position.y, position.z);
 	mesh.name = arg_name;
+
 	scene.add(mesh);
 }
 
@@ -241,11 +240,25 @@ function load_all_files(data){
 			
 			var object = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials)); 
 			
+			/*
+			ground_material = Physijs.createMaterial(
+				new THREE.MeshFaceMaterial(materials),
+				.8, // high friction
+				.4 // low restitution
+			);
+			
+			object = new Physijs.ConvexMesh(geometry,
+				ground_material,
+				0 // mass
+			);
+			*/
 			
 			object.name = name;
 			
 			object.position.set(pos[0],pos[1],pos[2]);
+			ground.__dirtyPosition = true;
 			object.rotation.set(rot[0],rot[1],rot[2]);
+			ground.__dirtyRotation = true;
 			
 			scene.add(object);
 			
@@ -264,7 +277,7 @@ function load_all_files(data){
 			switch(collisionType) {
 				case "Hard":
 						//HardCollide(vertices, faces, sca, pos, name);
-						HardCollide(geometry, sca, pos, name);
+						//HardCollide(geometry, sca, pos, name);
 						//objectPhysic.position.set(pos[0],pos[1],pos[2]);
 						//objectPhysic.quaternion.set(rot[0],rot[1],rot[2]);
 						//world.add(objectPhysic);

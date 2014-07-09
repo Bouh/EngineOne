@@ -7,7 +7,7 @@ app.camera = function(){
 		
 		camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 		
-		controls = new THREE.PointerLockControlsCannon(camera,sphereBody);
+		controls = new THREE.PointerLockControlsCannon(camera,scene.getObjectByName("boite"));
 		scene.add( controls.getObject() );
 
 };
