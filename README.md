@@ -7,19 +7,17 @@ Management of collisions in an environment made ​​with Maya and Blender.
 
 
 -   [Three.js](https://github.com/mrdoob/three.js "Display")
--   [Cannon.js](https://github.com/schteppe/cannon.js "Physics")
+-   [Cannon.js](https://github.com/schteppe/cannon.js "Physics") look my [examples](https://github.com/Bouh/Test/tree/master/cannon_js "Physics").
+-   [Physijs.js](https://github.com/chandlerprall/Physijs "Physics") look my [examples](https://github.com/Bouh/Test/tree/master/physijs "Physics").
 
 
-Available :
-------------
     
-    -   Jump
+What I will do next
+-------------------
+    
+	-   Jump (bug)
     -   Run
     -   Collision Box
-    
-What I will probably do next
-----------------------------
-    
     -   Clean code
     -   Data Json for loading
     -   Collison with Sphere, Plane, Custom, Convex
