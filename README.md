@@ -15,12 +15,11 @@ Management of collisions in an environment made ​​with Maya and Blender.
 What I will do next
 -------------------
     
-	-   Jump (bug)
+	-   Jump
     -   Run
-    -   Collision Box
+    -   Collision (rays)
     -   Clean code
     -   Data Json for loading
-    -   Collison with Sphere, Plane, Custom, Convex
     -   Data base shader or Json
-    -   Rays for detect mouse hover
+    -   Rays for detect shoot
     -   Drink a lot of coffee
