@@ -10,7 +10,11 @@ var add_images = new Array();
 
 var app = {
 	
+	friction : 1,
 	time : "0:0:0",
+	raycaster : new THREE.Raycaster(),
+	
+	shadow_opacity : 0.5,
 	clock : new THREE.Clock(),
 //	delta : app.clock.getDelta(),
 	objectsCollider : [],
@@ -19,7 +23,6 @@ var app = {
 	total_src_toload : 0,
 	control_move : null,
 	log_console : true,
-	keyboard : new THREEx.KeyboardState(),
 	havePointerLock : 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document,
 	
 	
@@ -27,10 +30,97 @@ var app = {
 	duff : function() {
 	},
 	
-	start : function() {
-		/*
+	motion : function() {
+	},
+	
+	activePointerLock : function(){
+		if(app.havePointerLock){
+
+			var element = document.body;
+				var pointerlockchange = function (event){
+
+					if(document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element){
+						controls.enabled = true;
+					}else{
+						controls.enabled = false;
+					}
+				}
+			var pointerlockerror = function (event){
+				//nothing
+			}
+
+			// Hook pointer lock state change events
+			document.addEventListener( 'pointerlockchange', pointerlockchange, false );
+			document.addEventListener( 'mozpointerlockchange', pointerlockchange, false );
+			document.addEventListener( 'webkitpointerlockchange', pointerlockchange, false );
+
+			document.addEventListener( 'pointerlockerror', pointerlockerror, false );
+			document.addEventListener( 'mozpointerlockerror', pointerlockerror, false );
+			document.addEventListener( 'webkitpointerlockerror', pointerlockerror, false );
+
+			window.addEventListener( 'click', function ( event ) {
+
+				// Ask the browser to lock the pointer
+				element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
+				element.requestPointerLock();
+			}, false );
+			
+			return true;
+			
+		}else{
+			instructions.innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API';
+			return false;
+		}
+	},
+
+	init_scene : function(){
+	
+		this.log_console === true ? console.log("app.init_scene") : false ;
+		scene = new THREE.Scene();
+		this.camera();
+		this.render();
+	},
+	
+	
+	createShadowedLight : function( x, y, z, color, intensity ) {
+		var directional_light = new THREE.DirectionalLight( color, intensity );
+		directional_light.position.set( x, y, z );
+		directional_light.castShadow = true;
+
+		/* Parameters for shadow casting */
+		var d = 1000;
+		directional_light.shadowCameraLeft   = -d;
+		directional_light.shadowCameraRight  =  d;
+		directional_light.shadowCameraTop    =  d;
+		directional_light.shadowCameraBottom = -d;
+
+		directional_light.shadowCameraNear 	= 0.01;
+		directional_light.shadowCameraFar 	= 5000;
+
+		directional_light.shadowMapWidth 	= 1024*2;
+		directional_light.shadowMapHeight 	= 1024*2;
 		
-		*/
+		return directional_light;
+	},
+
+	
+	Shadow : function() {
+		
+		renderer.shadowMapEnabled  = true;
+		
+		for(var i=0;i<scene.children.length;i++){
+			if(scene.children[i] instanceof THREE.Mesh){
+				scene.children[i].castShadow = true;
+				scene.children[i].receiveShadow = true;
+			}
+			
+			if(scene.children[i] instanceof THREE.DirectionalLight || scene.children[i] instanceof THREE.SpotLight ){
+				scene.children[i].shadowDarkness = app.shadow_opacity;
+				//debug
+				scene.children[i].shadowCameraVisible = true;
+			}
+		}
+		log( "Shadow", "OK", "green", "white")
 	},
 	
 	complete : function() {
@@ -76,15 +166,6 @@ var app = {
 	},
 	
 	
-	init_scene : function(){
-	
-		this.log_console === true ? console.log("app.init_scene") : false ;
-		scene = new Physijs.Scene();
-		joueur();
-		scene.setGravity(new THREE.Vector3( 0, -9.8*100, 0 ));
-		this.camera();
-		this.render();
-	},
 	
 	animate : function(){
 	
@@ -98,23 +179,18 @@ var app = {
 		app.updateStage();
 		
 		if(controls.enabled){
-			scene.setFixedTimeStep(app.delta);
+			world.step(app.delta);
+			controls.update(Date.now() - time);
 		}
-		controls.update(Date.now() - time);
-
-		//scene.getObjectByName("BoxControls").position.set(sphereBody.position.x, sphereBody.position.y, sphereBody.position.z);
-
-		sd =  new THREE.Euler();
-	//	sd.setFromQuaternion(sphereBody.quaternion,"XYZ");
-		//scene.getObjectByName("BoxControls").rotation.set(sd.x, sd.y, sd.z);
 		
-		mesh.__dirtyPosition = true;
+		//debug
+		scene.getObjectByName("sphereControls").position.set(sphereBody.position.x, sphereBody.position.y, sphereBody.position.z);
 		
-		scene.simulate( undefined, 1 );
 		renderer.render(scene, camera);
 		document.getElementsByTagName("p")[0].innerHTML = "Delta : 0,01699... /" + app.delta + "<br>Time : 17 / " + (Date.now() - time );
 		time = Date.now();
 		stats.update();
+		
 	},
 	
 	render : function() {
@@ -124,9 +200,10 @@ var app = {
 		var SCALE = 1;
 		
 		//renderer = new THREE.WebGLDeferredRenderer( { width: WIDTH, height: HEIGHT, scale: SCALE, antialias: true, brightness: 2.5 } );
-		
-		
+
 		renderer = new THREE.WebGLRenderer({antialias:true, canvas : mycanvas});
+		
+		renderer.shadowMapEnabled = true;
 		renderer.setFaceCulling( THREE.CullFaceBack, THREE.FrontFaceDirectionCW );
 		renderer.setSize( window.innerWidth, window.innerHeight );
 		renderer.setClearColor("white");
@@ -142,10 +219,11 @@ var app = {
 		
 			ftest = THREE.ImageUtils.loadTexture(src_img);
 			if(ftest.sourceFile == src_img ){
-				this.log_console === true ? console.log("Load OK -- " + src_img) : false ;
+			
+				log("Load OK", src_img, "green", "white");
 				return ftest
 			}else{
-				this.log_console === true ? console.log("Load FAIL -- " + src_img) : false ;
+				log("Load FAIL", src_img, "red", "white");
 				return false
 			}
 		}
@@ -163,19 +241,9 @@ var app = {
 		red : function(){
 			return new THREE.MeshLambertMaterial({
 				//map  : app.images(img),
-				color : "blue",
-				wireframe : false,
-				ambient : "red"
-				//side : THREE.DoubleSide					
-			});
-		},
-		
-		green : function(){
-			return new THREE.MeshLambertMaterial({
-				//map  : app.images(img),
 				color : "red",
 				wireframe : false,
-				ambient : "green"
+				//ambient : "blue"
 				//side : THREE.DoubleSide					
 			});
 		},
@@ -186,6 +254,26 @@ var app = {
 				wireframe : true
 			});
 		},
+		
+		/*
+		wall : function(){
+			return new THREE.MeshPhongMaterial({
+				color : new THREE.Color( 0xffffff ),
+				ambient : new THREE.Color( 0xffffff ),
+				emissive : new THREE.Color( 0x000000 ),
+				specular : new THREE.Color( 0x111111 ),
+				shininess : 30,
+
+				map :  new THREE.Texture("../textures/textures_batiment.jpg"),
+				normalMap : null,
+				normalScale : new THREE.Vector2( 1, 1 ),
+				specularMap : null,
+
+				reflectivity : 1,
+				refractionRatio : 0.98			
+			});
+		},
+		*/
 		
 		emissive : function(){
 			return new THREE.MeshLambertMaterial({
@@ -200,6 +288,7 @@ var app = {
 	
 	axe_debug : function(arg_x,arg_y,arg_z){
 		var axes = new THREE.AxisHelper(100);
+		
 		if(arg_x instanceof Object){
 			x = arg_x.position.x || 0 ;
 			y = arg_x.position.y || 0 ;
@@ -214,5 +303,115 @@ var app = {
 		
 		axes.position.set(x,y,z);
 		scene.add( axes );
+	},
+	
+	init_Cannon : function(){
+		// Setup our world
+		world = new CANNON.World();
+		//world.quatNormalizeSkip = 0;
+		//world.quatNormalizeFast = false;
+
+		var solver = new CANNON.GSSolver();
+		world.broadphase = new CANNON.NaiveBroadphase();
+		world.iterations = 20;
+
+		world.defaultContactMaterial.contactEquationStiffness = 1e9;
+		world.defaultContactMaterial.contactEquationRegularizationTime = 4;
+		solver.iterations = 20;
+		solver.tolerance = 0.1;
+	/*
+		var split = true;
+		if(split){
+			world.solver = new CANNON.SplitSolver(solver);
+		}else{
+			world.solver = solver;
+		}
+	*/
+		
+		// Create material for all
+		physicsMaterial = new CANNON.Material("slipperyMaterial");
+		var physicsContactMaterial = new CANNON.ContactMaterial(physicsMaterial,
+																physicsMaterial,
+																1.0, // friction coefficient
+																0.0  // restitution
+																);
+		
+		world.addContactMaterial(physicsContactMaterial);
+		
+		// Create a sphere physic
+		var mass = 10 * 100, radius = 25;
+		sphereShape = new CANNON.Sphere(radius);
+		sphereBody = new CANNON.RigidBody(mass,sphereShape,physicsMaterial);
+		sphereBody.position.set(252,60,145);
+		sphereBody.linearDamping = 0;
+		sphereBody.name = "sphereBody";
+		world.add(sphereBody);
+
+		
+		// Create a plane physic
+		var groundShape = new CANNON.Plane();
+		var groundBody = new CANNON.RigidBody(0,groundShape,physicsMaterial);
+		groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+		world.add(groundBody);
+		groundBody.name = "groundBody";
+		world.gravity.set(0,-970,0);
+	},
+	
+	load_all_files : function(data){
+		data.object.forEach(function(elem){
+		
+			var name = "data/models/" + elem.name + ".js";//file
+			
+			var loader = new THREE.JSONLoader( manager );
+			loader.load(name,function (geometry, materials){						
+				
+				console.debug(materials);
+				
+				var name = elem.name;//name
+				var pos = elem.position;//position
+				var rot = elem.rotation;//rotation
+				var sca = elem.scale;//rotation
+				var col = elem.collisionType;//collisionType
+				for(var i=0;i<materials.length;i++){
+					materials[i].needsUpdate = true;
+				}
+				
+				materials
+				
+//				materials.map.needsUpdate = true;
+				var object = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials)); 
+				
+				/*
+				collision with BoundingBox for cannon.js
+				*/
+				if(col == "box" ){
+					object.geometry.computeBoundingBox();
+				}
+				
+				object.material.needsUpdate = true;
+				
+				object.name = name;
+				
+				object.position.set(pos[0],pos[1],pos[2]);
+				object.rotation.set(rot[0],rot[1],rot[2]);
+				
+				scene.add(object);
+				
+				object
+				
+				objTOrescale = scene.getObjectByName(object.name);
+				
+				objTOrescale.scale.set(sca[0],sca[1],sca[2]);
+				
+				app.src_load ++;
+				
+				if(data.object.length == app.src_load){
+					app.Shadow();
+				}
+				
+			console.log("Placement : " + name);
+			},"data/textures/");
+			
+		});
 	}
 };

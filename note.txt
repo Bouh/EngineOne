@@ -1,64 +1,6 @@
-Chargement des data
-	Script
-	
-	
-	
-Chaque partie du jeu contient la liste des element a charger (pas open world)
-
-Chargement des element les plus proche dans la scene (du coup voir les LOD pour les element a l'horizon)
-
-
-
-
-
-
-
-
-
-
-///////
-
-- Chargement
-    - Script
-    - Textures
-	
-- Page chargé puis
-    - Lancement des stats
-    - Bloque curseur
-    - Initialisation de la physique
-    - Création de la scène three.js
-	
-- Chargement
-    - Mesh
-	
-
-- Placement des mesh avec les textures
-
-- Boucle d'animation / Rendus
-
-- Event
-	Resize window
-
----------------------------------------
----------------------------------------
-
-Chargement
-	Script de chargement
-		Assets Important
-			Decors
-		Autres script.
-			
-
-Initialisation.
-	Variables.
-	Mise en place des objets qui sont dans un certain rayon.
-
----------------------------------------
-
-Important link :
-
-//Aperçus visuel de cannon.js en three.js
-https://github.com/schteppe/cannon.js/blob/master/build/cannon.demo.js
+------------------------------------------------------------------------
+Link :
+------------------------------------------------------------------------
 
 //Forum 
 http://www.html5gamedevs.com/
@@ -66,94 +8,27 @@ http://www.html5gamedevs.com/
 //Cannon.js DOC
 http://schteppe.github.io/cannon.js/doc/
 
-
 http://schteppe.github.io/cannon.js/examples/threejs_fps.html
-
 
 http://davetayls.me/blog/2013/06/04/3d-css-and-physics-with-cannonjs/
 
+------------------------------------------------------------------------
+Note
+------------------------------------------------------------------------
 
+Contruction modulaire
+Batiment : groupe de mesh pas de collision
+	mur : mesh
+	mur-porte : mesh
+	mur-fenetre : mesh
 
+Chaque mesh a une collision de par la bounding box mais pas les groupes.
+Un mesh peut etre convexe si il est impossible d'y rentrer. 
+Si un autre objet aura comme sensation de flotté dans les air au contact
+de la bounding box alors l'objet doit etre revu ou découper.
 
+------------------------------------------------------------------------
+Bug
+------------------------------------------------------------------------
 
-
-
-
-//
-//Avoir un aperçus des box de collision en fonction des tailles de cannon.js
-//
-
-function shape2mesh(shape){
- 
-	var currentMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff, wireframe:true });
-	var wireframe = settings.renderMode=="wireframe";
-	var mesh;
-	switch(shape.type){
-
-	case CANNON.Shape.types.SPHERE:
-		var sphere_geometry = new THREE.SphereGeometry( shape.radius, 8, 8);
-		mesh = new THREE.Mesh( sphere_geometry, currentMaterial );
-		break;
-
-	case CANNON.Shape.types.PLANE:
-		var geometry = new THREE.PlaneGeometry( 10, 10 , 4 , 4 );
-		mesh = new THREE.Object3D();
-		var submesh = new THREE.Object3D();
-		var ground = new THREE.Mesh( geometry, currentMaterial );
-		ground.scale = new THREE.Vector3(100,100,100);
-		submesh.add(ground);
-
-		ground.castShadow = true;
-		ground.receiveShadow = true;
-
-		mesh.add(submesh);
-		break;
-
-	case CANNON.Shape.types.BOX:
-		var box_geometry = new THREE.CubeGeometry(  shape.halfExtents.x*2,
-													shape.halfExtents.y*2,
-													shape.halfExtents.z*2 );
-		mesh = new THREE.Mesh( box_geometry, currentMaterial );
-		break;
-
-	case CANNON.Shape.types.CONVEXPOLYHEDRON:
-		var verts = [];
-		for(var i=0; i<shape.vertices.length; i++){
-			verts.push(new THREE.Vector3(shape.vertices[i].x,
-			shape.vertices[i].y,
-			shape.vertices[i].z));
-		}
-		var geo = new THREE.ConvexGeometry( verts );
-		mesh = new THREE.Mesh( geo, currentMaterial );
-
-		break;
-
-	case CANNON.Shape.types.COMPOUND:
-		// recursive compounds
-		var o3d = new THREE.Object3D();
-		for(var i = 0; i<shape.childShapes.length; i++){
-
-			// Get child information
-			var subshape = shape.childShapes[i];
-			var o = shape.childOffsets[i];
-			var q = shape.childOrientations[i];
-	
-			var submesh = shape2mesh(subshape);
-			submesh.position.set(o.x,o.y,o.z);
-			submesh.quaternion.set(q.x,q.y,q.z,q.w);
-	
-			submesh.useQuaternion = true;
-			o3d.add(submesh);
-			mesh = o3d;
-		}
-		break;
-
-	default:
-		throw "Visual type not recognized: "+shape.type;
-	}
-
-
-
-
-
-
+camera revoir le system...
