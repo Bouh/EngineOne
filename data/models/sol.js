@@ -3,7 +3,7 @@
 	"metadata" :
 	{
 		"formatVersion" : 3.1,
-		"generatedBy"   : "Blender 2.65 Exporter",
+		"generatedBy"   : "Blender 2.7 Exporter",
 		"vertices"      : 4,
 		"faces"         : 1,
 		"normals"       : 1,
@@ -24,8 +24,6 @@
 		"colorAmbient" : [0.5, 0.5, 0.5],
 		"colorDiffuse" : [0.5, 0.5, 0.5],
 		"colorSpecular" : [0.3561643958091736, 0.3561643958091736, 0.3561643958091736],
-		"depthTest" : true,
-		"depthWrite" : true,
 		"mapDiffuse" : "sol_h_t.jpg",
 		"mapDiffuseWrap" : ["repeat", "repeat"],
 		"shading" : "Lambert",
