@@ -1,8 +1,6 @@
 EngineOne
 =========
 
-Source in DEV branch
-
 Management of collisions in an environment made ​​with Maya and Blender.
 
 
