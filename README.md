@@ -10,7 +10,7 @@ Management of collisions in an environment made ​​with Maya and Blender.
 
 
     
-What I will do next
+What I will probably do next
 -------------------
     
 	-   Jump
